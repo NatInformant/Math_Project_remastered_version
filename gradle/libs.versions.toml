@@ -1,0 +1,37 @@
+[versions]
+agp = "8.5.1"
+kotlin = "1.9.0"
+coreKtx = "1.13.1"
+junit = "4.13.2"
+junitVersion = "1.2.1"
+espressoCore = "3.6.1"
+appcompat = "1.7.0"
+material = "1.12.0"
+vbpd = "1.5.9"
+navigation = "2.7.7"
+dagger = "2.51"
+safeargs = "2.7.7"
+ksp = "1.9.20-1.0.14"
+kapt = "1.9.23"
+
+[libraries]
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+google-dagger = { group = "com.google.dagger", name = "dagger", version.ref = "dagger"}
+google-dagger-compiler = { group = "com.google.dagger", name = "dagger-compiler", version.ref = "dagger"}
+github-kirich1409-viewbindingpropertydelegate = { group = "com.github.kirich1409", name = "viewbindingpropertydelegate-full", version.ref = "vbpd"}
+androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigation"}
+androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigation"}
+androidx-navigation-dynamic-features-fragment = { group = "androidx.navigation", name = "navigation-dynamic-features-fragment", version.ref = "navigation"}
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+googleKsp = { id = "com.google.devtools.ksp", version.ref = "ksp"}
+kotlinKapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kapt"}
+safeargs = { id = "androidx.navigation.safeargs", version.ref = "safeargs"}
+

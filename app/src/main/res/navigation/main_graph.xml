@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_graph"
+    app:startDestination="@id/ticketsListFragment">
+
+    <fragment
+        android:id="@+id/ticketsListFragment"
+        android:name="com.example.healthypetsadvisor.math_project_remastered_version.TicketsListFragment"
+        android:label="fragment_tickets_list"
+        tools:layout="@layout/fragment_tickets_list" >
+        <action
+            android:id="@+id/action_ticketsListFragment_to_ticketFragment"
+            app:destination="@id/ticketFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/ticketFragment"
+        android:name="com.example.healthypetsadvisor.math_project_remastered_version.TicketFragment"
+        android:label="fragment_ticket"
+        tools:layout="@layout/fragment_ticket" />
+</navigation>
