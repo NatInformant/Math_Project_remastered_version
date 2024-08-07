@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/ticketsListFragment"
-        android:name="com.example.healthypetsadvisor.math_project_remastered_version.TicketsListFragment"
+        android:name="com.example.healthypetsadvisor.math_project_remastered_version.presenter.ticketsList.TicketsListFragment"
         android:label="fragment_tickets_list"
         tools:layout="@layout/fragment_tickets_list" >
         <action
@@ -16,7 +16,7 @@
     </fragment>
     <fragment
         android:id="@+id/ticketFragment"
-        android:name="com.example.healthypetsadvisor.math_project_remastered_version.TicketFragment"
+        android:name="com.example.healthypetsadvisor.math_project_remastered_version.presenter.ticket.TicketFragment"
         android:label="fragment_ticket"
         tools:layout="@layout/fragment_ticket" />
 </navigation>
