@@ -8,7 +8,11 @@ import javax.inject.Inject
 class TicketsListViewModel @Inject constructor(
     private val getTicketsUseCase: GetTicketsUseCase
 ) : ViewModel() {
-    fun getTickets(): TicketData {
-        return getTicketsUseCase()
+    var ticketsData: TicketData? = null
+    init{
+        getTicketsData()
+    }
+    private fun getTicketsData() {
+        ticketsData = getTicketsUseCase()
     }
 }

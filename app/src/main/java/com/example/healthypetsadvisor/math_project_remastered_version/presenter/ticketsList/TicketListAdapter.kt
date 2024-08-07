@@ -3,15 +3,21 @@ package com.example.healthypetsadvisor.math_project_remastered_version.presenter
 import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Filter
+import android.widget.Filterable
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.healthypetsadvisor.math_project_remastered_version.databinding.TicketListElementBinding
+import java.util.Locale
 
 class TicketListAdapter(
     private val showCurrentTicket: () -> Unit
-) : ListAdapter<TicketAndLevel, TicketListAdapter.TicketElementViewHolder>(FoodBrandDiffUtil()) {
+) : ListAdapter<TicketAndLevel, TicketListAdapter.TicketElementViewHolder>(FoodBrandDiffUtil()),
+    Filterable {
     var ticketsToPhotos: List<String> = emptyList()
+    var originalList: List<TicketAndLevel> = emptyList()
+    var ticketsTopics: List<TicketAndLevel> = emptyList()
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -157,6 +163,46 @@ class TicketListAdapter(
             newItem: TicketAndLevel
         ): Boolean {
             return oldItem == newItem
+        }
+    }
+
+    override fun getFilter(): Filter {
+        return object : Filter() {
+            override fun performFiltering(constraint: CharSequence): FilterResults {
+                constraint.toString().lowercase(Locale.getDefault())
+
+                val result = FilterResults()
+                if (constraint.toString().isNotEmpty()) {
+                    /*searchActivate = true*/
+
+                    val filteredItems = mutableListOf<TicketAndLevel>()
+
+                    filteredItems.addAll(ticketsTopics.filter {
+                        it.ticket.title.lowercase(Locale.getDefault())
+                            .startsWith(constraint.toString(), 9)
+                    })
+
+                    filteredItems.addAll(ticketsTopics.filter {
+                        it.ticket.title.lowercase(Locale.getDefault()).contains(constraint)
+                                && !filteredItems.contains(it)
+                    })
+
+                    result.count = filteredItems.size
+                    result.values = filteredItems
+                } else {
+                    synchronized(this) {
+                       /* searchActivate = false*/
+
+                        result.values = originalList
+                        result.count = originalList.size
+                    }
+                }
+                return result
+            }
+
+            override fun publishResults(constraint: CharSequence, results: FilterResults) {
+                submitList(results.values as List <TicketAndLevel>)
+            }
         }
     }
 }
