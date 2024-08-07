@@ -41,17 +41,20 @@ class TicketListAdapter(
         if (currentElementIndex == currentList.size - 1 ||
             currentList[currentElementIndex + 1].level <= ticketAndLevel.level
         ) {
-            showCurrentElementChildren(ticketAndLevel)
+            showCurrentElementChildren(ticketAndLevel, currentElementIndex)
         } else {
-            hideCurrentElementChildren(ticketAndLevel)
+            hideCurrentElementChildren(ticketAndLevel, currentElementIndex)
         }
     }
 
-    private fun showCurrentElementChildren(ticketAndLevel: TicketAndLevel) {
+    private fun showCurrentElementChildren(
+        ticketAndLevel: TicketAndLevel,
+        currentElementIndex: Int
+    ) {
         val newList = currentList.toMutableList()
 
         newList.addAll(
-            currentList.indexOf(ticketAndLevel) + 1,
+            currentElementIndex + 1,
             ticketAndLevel.ticket.childs.map {
                 TicketAndLevel(
                     ticket = it,
@@ -61,29 +64,37 @@ class TicketListAdapter(
         submitList(newList)
     }
 
-    private fun hideCurrentElementChildren(ticketAndLevel: TicketAndLevel) {
+    private fun hideCurrentElementChildren(
+        ticketAndLevel: TicketAndLevel,
+        currentElementIndex: Int
+    ) {
         val newList = currentList.toMutableList()
-        var nextSameLevelElementIndex = -1
-
-        for (x in (currentList.indexOf(ticketAndLevel) + 1)..<currentList.size) {
-            if (currentList[x].level == ticketAndLevel.level) {
-                nextSameLevelElementIndex = x
-                break
-            }
-        }
-
-        if (nextSameLevelElementIndex == -1) {
-            nextSameLevelElementIndex = currentList.size
-        }
 
         newList.removeAll(
             currentList.subList(
-                currentList.indexOf(ticketAndLevel) + 1,
-                nextSameLevelElementIndex
+                currentElementIndex + 1,
+                getNextSameOrLowerLevelElementIndex(ticketAndLevel)
             )
         )
 
         submitList(newList)
+    }
+
+    private fun getNextSameOrLowerLevelElementIndex(ticketAndLevel: TicketAndLevel): Int {
+        var nextSameOrLowerLevelElementIndex = -1
+
+        for (x in (currentList.indexOf(ticketAndLevel) + 1)..<currentList.size) {
+            if (currentList[x].level <= ticketAndLevel.level) {
+                nextSameOrLowerLevelElementIndex = x
+                break
+            }
+        }
+
+        if (nextSameOrLowerLevelElementIndex == -1) {
+            nextSameOrLowerLevelElementIndex = currentList.size
+        }
+
+        return nextSameOrLowerLevelElementIndex
     }
 
     class TicketElementViewHolder(
@@ -93,21 +104,14 @@ class TicketListAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun onBind(element: TicketAndLevel) = with(binding) {
-            title.isAllCaps = false
-            title.setTypeface(null, Typeface.NORMAL)
+            setUpCurrentElementTitle(element)
 
-            title.text = element.ticket.title
-            title.setCompoundDrawablesWithIntrinsicBounds(element.ticket.iconResource, 0, 0, 0)
+            setUpCurrentElementClickListener(element)
+        }
 
-            title.setPadding((element.level + 1) * 30, 0, 0, 0)
-
-            if (element.level == 0) {
-                title.isAllCaps = true
-                title.setTypeface(null, Typeface.BOLD)
-            } else if (element.level == 1) {
-                title.setTypeface(null, Typeface.BOLD)
-            }
-
+        private fun TicketListElementBinding.setUpCurrentElementClickListener(
+            element: TicketAndLevel
+        ) {
             ticketListElement.setOnClickListener {
                 if (element.ticket.childs.size == 0) {
                     showCurrentTicket()
@@ -115,6 +119,26 @@ class TicketListAdapter(
                 }
 
                 currentElementClickListener(element)
+            }
+        }
+
+        private fun TicketListElementBinding.setUpCurrentElementTitle(
+            element: TicketAndLevel
+        ) = with(title) {
+
+            isAllCaps = false
+            setTypeface(null, Typeface.NORMAL)
+
+            text = element.ticket.title
+
+            setCompoundDrawablesWithIntrinsicBounds(element.ticket.iconResource, 0, 0, 0)
+            setPadding((element.level + 1) * 30, 0, 0, 0)
+
+            if (element.level == 0) {
+                isAllCaps = true
+                setTypeface(null, Typeface.BOLD)
+            } else if (element.level == 1) {
+                setTypeface(null, Typeface.BOLD)
             }
         }
     }
