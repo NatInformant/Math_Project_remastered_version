@@ -9,7 +9,7 @@
         android:id="@+id/ticketsListFragment"
         android:name="com.example.healthypetsadvisor.math_project_remastered_version.presenter.ticketsList.TicketsListFragment"
         android:label="fragment_tickets_list"
-        tools:layout="@layout/fragment_tickets_list" >
+        tools:layout="@layout/fragment_tickets_list">
         <action
             android:id="@+id/action_ticketsListFragment_to_ticketFragment"
             app:destination="@id/ticketFragment" />
@@ -18,5 +18,8 @@
         android:id="@+id/ticketFragment"
         android:name="com.example.healthypetsadvisor.math_project_remastered_version.presenter.ticket.TicketFragment"
         android:label="fragment_ticket"
-        tools:layout="@layout/fragment_ticket" />
+        tools:layout="@layout/fragment_ticket">
+        <argument android:name="linksToTicketPhotos"
+            app:argType="com.example.healthypetsadvisor.math_project_remastered_version.data.model.TicketLinksToPhotos" />
+    </fragment>
 </navigation>

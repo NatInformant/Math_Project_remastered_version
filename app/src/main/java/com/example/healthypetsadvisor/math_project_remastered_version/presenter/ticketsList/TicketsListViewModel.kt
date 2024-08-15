@@ -9,9 +9,12 @@ class TicketsListViewModel @Inject constructor(
     private val getTicketsUseCase: GetTicketsUseCase
 ) : ViewModel() {
     var ticketsData: TicketData? = null
-    init{
+    var savedTicketsList: List<TicketAndLevel>? = null
+
+    init {
         getTicketsData()
     }
+
     private fun getTicketsData() {
         ticketsData = getTicketsUseCase()
     }

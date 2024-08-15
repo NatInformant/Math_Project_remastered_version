@@ -8,16 +8,22 @@ import android.widget.Filterable
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.healthypetsadvisor.math_project_remastered_version.data.model.BooleanObject
 import com.example.healthypetsadvisor.math_project_remastered_version.databinding.TicketListElementBinding
+import com.example.healthypetsadvisor.math_project_remastered_version.utils.TicketListAdapterUtils.getLinksToCurrentTicketPhotos
 import java.util.Locale
 
 class TicketListAdapter(
-    private val showCurrentTicket: () -> Unit
-) : ListAdapter<TicketAndLevel, TicketListAdapter.TicketElementViewHolder>(FoodBrandDiffUtil()),
+    private val showCurrentTicket: (List<String>) -> Unit
+) : ListAdapter<TicketAndLevel, TicketListAdapter.TicketElementViewHolder>(TicketDiffUtil()),
     Filterable {
+    //Список строк в формате Билет.....Ссылки на фото билета.....Билет
     var ticketsToPhotos: List<String> = emptyList()
+    //Список до применения поиска
     var originalList: List<TicketAndLevel> = emptyList()
+    //Вопросы билетов
     var ticketsTopics: List<TicketAndLevel> = emptyList()
+    var isSearchActive = BooleanObject(false)
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -35,6 +41,8 @@ class TicketListAdapter(
             elementBinding,
             showCurrentTicket,
             ::currentElementClickListener,
+            ticketsToPhotos,
+            isSearchActive
         )
     }
 
@@ -105,8 +113,10 @@ class TicketListAdapter(
 
     class TicketElementViewHolder(
         private val binding: TicketListElementBinding,
-        private val showCurrentTicket: () -> Unit,
-        private val currentElementClickListener: (TicketAndLevel) -> Unit
+        private val showCurrentTicket: (List<String>) -> Unit,
+        private val currentElementClickListener: (TicketAndLevel) -> Unit,
+        private val ticketsToPhotos: List<String>,
+        private var isSearchActive: BooleanObject
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun onBind(element: TicketAndLevel) = with(binding) {
@@ -120,7 +130,18 @@ class TicketListAdapter(
         ) {
             ticketListElement.setOnClickListener {
                 if (element.ticket.childs.size == 0) {
-                    showCurrentTicket()
+
+                    val sheetPartNumber: Int = (element.ticket.title[0] - 48).code
+                    val sheetTicketNumber: Int = element.ticket.title.substring(2, 4).toInt()
+
+                    showCurrentTicket(
+                        getLinksToCurrentTicketPhotos(
+                            sheetPartNumber,
+                            sheetTicketNumber,
+                            ticketsToPhotos
+                        )
+                    )
+
                     return@setOnClickListener
                 }
 
@@ -140,6 +161,10 @@ class TicketListAdapter(
             setCompoundDrawablesWithIntrinsicBounds(element.ticket.iconResource, 0, 0, 0)
             setPadding((element.level + 1) * 30, 0, 0, 0)
 
+            if (isSearchActive.value) {
+                return
+            }
+
             if (element.level == 0) {
                 isAllCaps = true
                 setTypeface(null, Typeface.BOLD)
@@ -150,7 +175,7 @@ class TicketListAdapter(
     }
 
 
-    class FoodBrandDiffUtil : DiffUtil.ItemCallback<TicketAndLevel>() {
+    class TicketDiffUtil : DiffUtil.ItemCallback<TicketAndLevel>() {
         override fun areItemsTheSame(
             oldItem: TicketAndLevel,
             newItem: TicketAndLevel
@@ -173,7 +198,7 @@ class TicketListAdapter(
 
                 val result = FilterResults()
                 if (constraint.toString().isNotEmpty()) {
-                    /*searchActivate = true*/
+                    isSearchActive.value = true
 
                     val filteredItems = mutableListOf<TicketAndLevel>()
 
@@ -191,7 +216,7 @@ class TicketListAdapter(
                     result.values = filteredItems
                 } else {
                     synchronized(this) {
-                       /* searchActivate = false*/
+                        isSearchActive.value = false
 
                         result.values = originalList
                         result.count = originalList.size
@@ -201,7 +226,7 @@ class TicketListAdapter(
             }
 
             override fun publishResults(constraint: CharSequence, results: FilterResults) {
-                submitList(results.values as List <TicketAndLevel>)
+                submitList(results.values as List<TicketAndLevel>)
             }
         }
     }

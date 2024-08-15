@@ -6,11 +6,13 @@ import android.text.TextWatcher
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView.VERTICAL
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.example.healthypetsadvisor.math_project_remastered_version.App.Companion.viewModelFactory
 import com.example.healthypetsadvisor.math_project_remastered_version.R
+import com.example.healthypetsadvisor.math_project_remastered_version.data.model.TicketLinksToPhotos
 import com.example.healthypetsadvisor.math_project_remastered_version.data.model.TicketListItem
 import com.example.healthypetsadvisor.math_project_remastered_version.databinding.FragmentTicketsListBinding
 
@@ -37,26 +39,32 @@ class TicketsListFragment : Fragment(R.layout.fragment_tickets_list) {
     }
 
     private fun setUpListToRecyclerView() {
-
-        ticketsListAdapter.submitList(
-            viewModel.ticketsData!!.hierarchicalTicketsList
+        if (viewModel.savedTicketsList == null) {
+            ticketsListAdapter.submitList(
+                viewModel.ticketsData!!.hierarchicalTicketsList
+                    .map {
+                        TicketAndLevel(
+                            ticket = it,
+                            level = 0
+                        )
+                    }
+            )
+            ticketsListAdapter.originalList = viewModel.ticketsData!!.hierarchicalTicketsList
                 .map {
                     TicketAndLevel(
                         ticket = it,
                         level = 0
                     )
                 }
-        )
+        } else {
+            ticketsListAdapter.submitList(viewModel.savedTicketsList)
+            ticketsListAdapter.originalList = viewModel.savedTicketsList!!
+        }
+
         ticketsListAdapter.ticketsTopics = viewModel.ticketsData!!.ticketTopics.map { topic ->
             TicketAndLevel(ticket = TicketListItem(topic), level = 0)
         }
-        ticketsListAdapter.originalList = viewModel.ticketsData!!.hierarchicalTicketsList
-            .map {
-                TicketAndLevel(
-                    ticket = it,
-                    level = 0
-                )
-            }
+        ticketsListAdapter.ticketsToPhotos = viewModel.ticketsData!!.mathTicketsNumbersAndPhotos
     }
 
     private fun setUpFilter() {
@@ -73,7 +81,14 @@ class TicketsListFragment : Fragment(R.layout.fragment_tickets_list) {
         })
     }
 
-    fun showCurrentTicket() {
+    private fun showCurrentTicket(linksToTicketSheets: List<String>) {
+        viewModel.savedTicketsList = ticketsListAdapter.currentList
 
+        val action = TicketsListFragmentDirections.actionTicketsListFragmentToTicketFragment(
+            TicketLinksToPhotos(
+                linksToTicketSheets
+            )
+        )
+        findNavController().navigate(action)
     }
 }
